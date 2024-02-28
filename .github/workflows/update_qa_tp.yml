@@ -1,0 +1,45 @@
+name: Update QA TP
+on:
+  release:
+    types: [published]
+
+jobs:
+  configAPI_update:
+    runs-on: ubuntu-latest
+    name: Update Dev Tracking Plan
+    steps:
+      - name: Config API Action - QA
+        id: hello_qa
+        uses: AubreySine0/Aubrey---TP-Repo2@main
+        with:
+          Tracking-Plan-Type: 'QA'
+          Segment-Token: ${{ secrets.SEGMENT_CONFIG_API_TOKEN }}
+          
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Configure Git identity
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+
+      - name: Fetch main branch
+        run: git fetch origin main:main
+
+      - name: Switch to main branch
+        run: git checkout main
+
+      - name: Run render-capi-tp.js and capture output
+        run: |
+         node render-capi-tp.js
+
+      - name: Commit and push changes
+        run: |
+          git add ./docs/aubrey_tp.md
+          git commit -m "Update tracking plan"
+          git push origin main
