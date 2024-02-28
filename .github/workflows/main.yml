@@ -1,0 +1,16 @@
+name: Update Dev TP
+on:
+  push:
+    branches:
+      - main
+jobs:
+  configAPI_update:
+    runs-on: ubuntu-latest
+    name: Update Dev Tracking Plan
+    steps:
+      - name: Config API Action
+        id: hello
+        uses: AubreySine0/Aubrey---TP-Repo2@main
+        with:
+         Tracking-Plan-Type: 'Dev'
+         Segment-Token: ${{ secrets.SEGMENT_CONFIG_API_TOKEN }}
