@@ -1,0 +1,45 @@
+name: Sandbox Update > New Branch
+on:
+  repository_dispatch:
+    types:
+      - tracking_plan_updated
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create branch
+      uses: peterjgrainger/action-create-branch@v2.2.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        branch: ${{ github.event.client_payload.timestamp }}
+
+    - name: Checkout branch
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.client_payload.timestamp }}
+
+    - name: Debug information
+      run: |
+        echo "Current directory: $PWD"
+        echo "List of files:"
+        ls -al
+
+    - name: Commit Update Tracking Plan
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEGMENT_CONFIG_API_TOKEN: ${{ secrets.SEGMENT_CONFIG_API_TOKEN }}
+      run: |
+        echo "Configuring git user..."
+        git config --global user.name github-actions
+        git config --global user.email github-actions@github.com
+
+        echo "Running typewriter update..."
+        npx typewriter update
+
+        echo "Committing and pushing changes..."
+        git add .
+        git commit -m "regenerated plan.json"
+        git push
